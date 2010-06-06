@@ -67,7 +67,12 @@ module S3gb
   end
 
   def self.sync_files
-    `/usr/bin/rsync -avz --delete #{cache_dir}/ #{mount_dir}`
+    Dir.glob("#{cache_dir}/*", File::FNM_DOTMATCH).each do |sub_path|
+      sub_path = File.basename(sub_path)
+      next if ['.','..'].include?(sub_path)
+      puts "syncing #{sub_path}"
+      `/usr/bin/rsync -avz --delete #{cache_dir}/#{sub_path} #{mount_dir}`
+    end
   end
 
   private
