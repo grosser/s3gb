@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'optparse'
+
+$LOAD_PATH << File.expand_path(__FILE__+"/../../lib")
+require 's3gb'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = <<BANNER
+Options are:
+BANNER
+  opts.on("--install-s3fs", "Install s3fs") { S3gb.install_s3fs; exit }
+  opts.on("--backup", "Backup given folders with a new commit") { S3gb.backup; exit }
+  opts.on("--mount", "Mount") { S3gb.mount; exit }
+  opts.on('--unmount', 'Unmount'){ S3gb.unmount; exit }
+  opts.on('--collect', 'Collect files into cache'){ S3gb.collect_files; exit }
+  opts.on('--commit', 'Commit'){ S3gb.create_commit; exit }
+  opts.on('--sync', 'Sync files'){ S3gb.sync_files; exit }
+end.parse!
