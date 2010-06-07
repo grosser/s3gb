@@ -20,17 +20,21 @@ class S3gb
           puts "now comes #{path}"
           full_path = "#{cache_dir}#{File.dirname(path)}"
           ensure_dir full_path
-          `/usr/bin/rsync -avz --delete --exclude-from #{excludes} #{path} #{full_path}`
+          `rsync -avz --delete --exclude-from #{excludes} #{path} #{full_path}`
         end
       end
     end
 
     def self.commit_changes
-      `cd #{cache_dir} && git init` unless File.exist?("#{cache_dir}/.git")
+      ensure_git_repo
       `cd #{cache_dir} && git add . && git commit -m "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"`
     end
 
     protected
+
+    def ensure_git_repo
+      `cd #{cache_dir} && git init` unless File.exist?("#{cache_dir}/.git")
+    end
 
     def with_exclude_file
       Tempfile.open('foo') do |t|
@@ -46,7 +50,7 @@ class S3gb
 
     def cache_dir
       @cache_dir ||= begin
-        dir = File.expand_path('cache')
+        dir = File.expand_path(@config['cache'])
         ensure_dir dir
         dir
       end

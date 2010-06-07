@@ -1,5 +1,5 @@
 class S3gb
-  class JGit
+  class JGit < S3gb::Base
     def install
       require 'open-uri'
       page = open('http://www.eclipse.org/jgit/download/').read
@@ -11,6 +11,7 @@ class S3gb
     end
 
     def prepare
+      ensure_git_repo
       ensure_jgit_config
       ensure_jgit_remote
       `cd #{cache_dir} && jgit pull`
