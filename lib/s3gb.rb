@@ -33,13 +33,33 @@ module S3gb
     `cd /tmp && wget #{url} && tar -xzf s3fs* && cd s3fs && make && sudo make install`
   end
 
+  def self.install_jgit
+    require 'open-uri'
+    page = open('http://www.eclipse.org/jgit/download/').read
+    url = page.match(/"(.*?org.eclipse.jgit.*?.sh)"/)[1]
+    file = File.basename(url)
+    to = '/usr/bin/jgit'
+    `rm #{file}*`
+    `sudo rm #{to}`
+    `cd /tmp && wget #{url} && sudo mv #{file} #{to} && sudo chmod 755 #{to}`
+  end
+
   def self.backup
     ensure_dir cache_dir
-    mount
-    collect_files
-    create_commit
-    sync_files
-    unmount
+    case config['strategy']
+    when 'rsync', nil then
+      mount
+      collect_files
+      create_commit
+      sync_files
+    when 'jgit' then
+      pull  
+      collect_files
+      create_commit
+      push
+    else
+      raise "unknown strategy #{config['strategy']}"
+    end
   end
 
   def self.ensure_dir(dir)
@@ -58,12 +78,23 @@ module S3gb
     end
   end
 
+  def self.pull
+    init_cache_dir
+    ensure_jgit_config
+    ensure_jgit_remote
+    `cd #{cache_dir} && jgit pull`
+  end
+
   def self.create_commit
+    init_cache_dir
+    `cd #{cache_dir} && git add . && git commit -m "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"`
+  end
+
+  def self.init_cache_dir
     ensure_dir cache_dir
     unless File.exist?("#{cache_dir}/.git")
       `cd #{cache_dir} && git init`
     end
-    `cd #{cache_dir} && git add . && git commit -m "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"`
   end
 
   def self.sync_files
@@ -76,6 +107,21 @@ module S3gb
   end
 
   private
+
+  def jgit_s3
+    File.expand_path('~/.jgit_s3')
+  end
+
+  def ensure_jgit_remote
+    `cd #{cache_dir} && git remote add s3 amazon-s3://.jgit_s3@#{config['bucket']}/#{config['bucket']}.git`
+  end
+
+  def ensure_jgit_config
+    return if File.exist?(jgit_s3)
+    File.open(jgit_s3, 'w') do |f|
+      f.write "accesskey: #{config['accessKeyId']}\nsecretkey: #{config['secretAccessKey']}\nacl: private"
+    end
+  end
 
   def self.with_exclude_file
     Tempfile.open('foo') do |t|
