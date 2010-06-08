@@ -1,5 +1,7 @@
+require 's3gb/base'
+
 class S3gb
-  class S3fs
+  class S3fs < S3gb::Base
     def prepare
       `mkdir #{mount_dir}` unless File.exist?(mount_dir)
       `/usr/bin/s3fs #{config['bucket']} -o accessKeyId=#{config['accessKeyId']} -o secretAccessKey=#{config['secretAccessKey']} #{mount_dir}`
@@ -28,7 +30,7 @@ class S3gb
     private
 
     def mount_dir
-      File.expand_path('fs')
+      File.expand_path("~/.s3gb/fs")
     end
   end
 end

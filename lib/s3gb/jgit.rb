@@ -1,3 +1,5 @@
+require 's3gb/base'
+
 class S3gb
   class JGit < S3gb::Base
     def install
@@ -11,10 +13,12 @@ class S3gb
     end
 
     def prepare
-      ensure_git_repo
       ensure_jgit_config
-      ensure_jgit_remote
-      `cd #{cache_dir} && jgit pull`
+      ensure_jgit_repo
+    end
+
+    def push
+      cmd "cd #{cache_dir} && jgit push s3 refs/heads/master"
     end
 
     protected
@@ -23,14 +27,29 @@ class S3gb
       File.expand_path('~/.jgit_s3')
     end
 
-    def ensure_jgit_remote
-      `cd #{cache_dir} && git remote add s3 amazon-s3://.jgit_s3@#{config['bucket']}/#{config['bucket']}.git`
+    def ensure_jgit_repo
+      return if File.exist? "#{cache_dir}/.git"
+      out = cmd "cd #{File.dirname(cache_dir)} && jgit clone -o s3 #{public_s3_url} #{File.basename cache_dir} && echo COMPLETE"
+      return if out.include?('COMPLETE')
+      cmd "cd #{cache_dir} && git init && git remote add s3 #{s3_url}"
+    end
+
+    def s3_url
+      "amazon-s3://.jgit_s3@#{config['bucket']}/s3gb.git"
+    end
+
+    def public_s3_url
+      "http://#{config['bucket']}.s3.amazonaws.com/s3gb.git"
+    end
+
+    def cmd x
+      puts x
+      `#{x}`
     end
 
     def ensure_jgit_config
-      return if File.exist?(jgit_s3)
       File.open(jgit_s3, 'w') do |f|
-        f.write "accesskey: #{config['accessKeyId']}\nsecretkey: #{config['secretAccessKey']}\nacl: private"
+        f.write "accesskey: #{config['accessKeyId']}\nsecretkey: #{config['secretAccessKey']}"
       end
     end
   end

@@ -14,6 +14,6 @@ BANNER
   opts.on("--backup", "Backup given folders with a new commit") { S3gb.build.backup; exit }
   opts.on("--prepare", "Prepare for backup") { S3gb.build.prepare; exit }
   opts.on('--collect', 'Collect files into cache'){ S3gb.build.collect_files; exit }
-  opts.on('--commit', 'Commit'){ S3gb.build.create_commit; exit }
+  opts.on('--commit', 'Commit'){ S3gb.build.commit_changes; exit }
   opts.on('--push', 'Push changes to s3'){ S3gb.build.push; exit }
 end.parse!

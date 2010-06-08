@@ -25,7 +25,7 @@ class S3gb
       end
     end
 
-    def self.commit_changes
+    def commit_changes
       ensure_git_repo
       `cd #{cache_dir} && git add . && git commit -m "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"`
     end
@@ -50,7 +50,7 @@ class S3gb
 
     def cache_dir
       @cache_dir ||= begin
-        dir = File.expand_path(@config['cache'])
+        dir = File.expand_path("~/.s3gb/cache")
         ensure_dir dir
         dir
       end
