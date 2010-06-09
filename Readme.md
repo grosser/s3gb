@@ -8,6 +8,7 @@ Enter your config: [Your S3 keys](https://www.amazon.com/ap/signin?openid.ns=htt
     bucket: s3gb
     accessKeyId: --your--key--
     secretAccessKey: --your--key--
+    acl: private
     strategy: jgit
     cache: ~/.s3gb_cache
     sync:
@@ -22,6 +23,6 @@ Enter your config: [Your S3 keys](https://www.amazon.com/ap/signin?openid.ns=htt
 
 Then:
 
- - create the bucket using e.g. S3Fox
+ - create the bucket using e.g. S3Fox AND add a .git folder to it
  - `sudo s3gb --install` to install dependencies for your chosen strategy
  - `s3gb --backup`

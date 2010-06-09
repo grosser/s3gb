@@ -35,11 +35,11 @@ class S3gb
     end
 
     def s3_url
-      "amazon-s3://.jgit_s3@#{config['bucket']}/s3gb.git"
+      "amazon-s3://.jgit_s3@#{config['bucket']}/.git"
     end
 
     def public_s3_url
-      "http://#{config['bucket']}.s3.amazonaws.com/s3gb.git"
+      "http://#{config['bucket']}.s3.amazonaws.com/.git"
     end
 
     def cmd x
@@ -49,7 +49,7 @@ class S3gb
 
     def ensure_jgit_config
       File.open(jgit_s3, 'w') do |f|
-        f.write "accesskey: #{config['accessKeyId']}\nsecretkey: #{config['secretAccessKey']}"
+        f.write "accesskey: #{config['accessKeyId']}\nsecretkey: #{config['secretAccessKey']}\nacl: #{config['acl']||'private'}"
       end
     end
   end
