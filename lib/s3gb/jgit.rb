@@ -28,10 +28,11 @@ class S3gb
     end
 
     def ensure_jgit_repo
+      # this only works if a public repo already exists
       return if File.exist? "#{cache_dir}/.git"
-      out = cmd "cd #{File.dirname(cache_dir)} && jgit clone -o s3 #{public_s3_url} #{File.basename cache_dir} && echo COMPLETE"
+      out = cmd "cd #{File.dirname(cache_dir)} && jgit clone -o s3 #{public_s3_url} #{File.basename cache_dir}"
       return if out.include?('COMPLETE')
-      cmd "cd #{cache_dir} && git init && git remote add s3 #{s3_url}"
+      cmd "cd #{cache_dir} && git init ; git remote rm s3 ; git remote add s3 #{s3_url}"
     end
 
     def s3_url
