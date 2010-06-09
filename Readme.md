@@ -1,3 +1,5 @@
+Collects all your stuff into a git repo, commits all changes, pushes it to s3.
+
 Install
 =======
 
@@ -26,3 +28,9 @@ Then:
  - create the bucket using e.g. S3Fox AND add a .git folder to it
  - `sudo s3gb --install` to install dependencies for your chosen strategy
  - `s3gb --backup`
+
+Author
+======
+[Michael Grosser](http://pragmatig.wordpress.com)
+grosser.michael@gmail.com
+Hereby placed under public domain, do what you want, just do not hold me accountable...
