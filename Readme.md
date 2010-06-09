@@ -26,7 +26,7 @@ Then:
 
  - create the bucket using e.g. S3Fox AND add a .git folder to it
  - `sudo s3gb --install` to install dependencies for your chosen strategy
- - `s3gb --backup` and add it to your cron with e.g. `0 0 * * * s3gb --backup`
+ - `s3gb --backup` and add it to your cron with e.g. `0 0 * * * /usr/local/bin/s3gb --backup >> /tmp/s3gb.log 2>&1`
 
 Author
 ======
