@@ -27,7 +27,7 @@ class S3gb
 
     def commit_changes
       ensure_git_repo
-      `cd #{cache_dir} && git add . && git commit -m "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"`
+      `cd #{cache_dir} && git add . && git add -u . && git commit -m "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"`
     end
 
     protected
